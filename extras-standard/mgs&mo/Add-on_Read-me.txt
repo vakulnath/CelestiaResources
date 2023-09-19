@@ -1,0 +1,23 @@
+Add-0n - Full:
+
+Title:  Mars Global Surveyor and Mars Odyssey Spacecraft, revision 2.
+
+1.  This is a Celestia add-on.  It is designed to be unzipped and/or save to a folder inside the Celestia main folder called Extras".  To do so, do the following:
+
+1.  Make sure you have an "unzipping" program available on your computer.  If you are reading this file, you probably do.
+
+2.  Unzip the file into a convenient place, such as your desktop or another folder named "unzipped" or something else.
+
+3.  Copy the entire folder by right-clicking on it and choosing "copy" from the menu that appears.
+
+4.  Locate your Celestia main folder.  It is usually placed on your C: hard drive in the Program Files folder under the name "celestia".
+
+5.  Inside that folder, locate the "extras' folder.  Click on it to open it.
+
+6.  Paste this unzipped add-on folder into the extras folder.  
+
+
+Special comments:  This add-on represents the Mars Global Surveyor (MGS) and Mars Odyssey (MO) spacecraft.  MGS went into orbit around Mars on September 11, 1997.  Mars Odyssey reached Mars on October 24, 2001.  Both spacecraft are still orbiting Mars. To see them, you must be certain your date (upper right corner of the screen) is set to a time after 9/11/97 and/or 10/24/2001 respectively.  To set the "time" in Celestia, pull down the "time" menu at the top of the program screen and adjust the date.
+
+
+Add-on author:  COPYRIGHT AND COURTESY:  Jack Higgins - add-on collation by F. Gregorio  

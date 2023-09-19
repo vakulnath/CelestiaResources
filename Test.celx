@@ -1,0 +1,92 @@
+now = celestia:gettime()
+uly_to_km = 9460730.4725808                     -- Light years to Km
+
+sol = celestia:find("Sol")
+earth = celestia:find("Earth")
+mars = celestia:find("Mars")
+
+iss_spacecraft = celestia:find("Earth/ISS")                     -- International Space Stattion 
+express_spacecraft = celestia:find("Sol/Mars Express flight")   -- Mars express 
+mro_spacecraft = celestia:find("Mars/MRO")                      -- Mars reconaissance Orbiter 
+odyssey_spacecraft = celestia:find("Mars/Mars Odyssey")     -- Mars odyssey 
+mgs_spacecraft = celestia:find("Mars/MGS")                      -- Mars Global Surveyor
+
+mars_pos = mars:getposition(now) 
+earth_pos = earth:getposition(now)
+
+iss_spacecraft_pos = iss_spacecraft:getposition(now)
+express_spacecraft_pos = express_spacecraft:getposition(now)
+mro_spacecraft_pos = mro_spacecraft:getposition(now)
+odyssey_spacecraft_pos = odyssey_spacecraft:getposition(now)
+mgs_spacecraft_pos = mgs_spacecraft:getposition(now)
+
+-- Initialize function selects Earth as the observer and sets the pov to top view of our solar system. 
+function initialize ()
+    obs = celestia:getobserver()
+    obs:splitview("V", 0.5)
+    observers = celestia:getobservers()
+    observers[1]:gotolonglat(sol, 0, 70, 2000000000, 5)
+    wait(5)
+    observers[2]:goto(earth)
+    observers[2]:gotodistance(mars, 90000+earth:radius(), 3.0)
+end
+
+-- Calculates distance between Earth and Mars at the current time in AU 
+function positions () 
+    distance = earth_pos:distanceto(mars_pos) / 149597870.7
+    celestia:print("Mars is " .. distance .. " AU away", 10.0, -1, -1, 2, 4)
+    wait(1.0)
+end
+
+function LineOfSight()
+    Mars_Radius = 3396                                -- in km
+
+    MarstoISS = mars_pos:vectorto(iss_spacecraft_pos)   
+    MarstoISS_length = MarstoISS:length() * uly_to_km   -- get the magnitude from Mars center to ISS
+    ISStoMars_tangent = (math.sqrt((MarstoISS_length ^ 2) + (Mars_Radius ^ 2))) -- formula to find the tangent from ISS to Mars
+    ISS_Magnitude = math.atan(Mars_Radius / MarstoISS_length)     -- finding the magnitude of ISS to Mars (*2 to fine the total magnitude)
+    ISStoMars_degree = math.deg(ISS_Magnitude)                           -- converting radians to Degrees
+    celestia:print("ISS to Mars: " ..ISStoMars_degree.. "Degree")
+    wait(5)
+
+    MarstoExpress = mars_pos:vectorto(express_spacecraft_pos)
+    MarstoExpress_length = MarstoExpress:length() * uly_to_km
+    ISStoExpress_magnitude = math.atan(MarstoExpress_length / MarstoISS_length) * 2
+    ISStoExpress_degree = math.deg(ISStoExpress_magnitude)
+    celestia:print("ISS to Express:" ..ISStoExpress_degree.. "Degrees")
+    wait(5)
+
+    MarstoMro = mars_pos:vectorto(mro_spacecraft_pos)
+    MarstoMro_length = MarstoMro:length() * uly_to_km
+    ISStoMro_magnitude = math.atan(MarstoMro_length / MarstoISS_length) 
+    ISStoMro_degree = math.deg(ISStoMro_magnitude)
+    celestia:print("ISS to Mro:" ..ISStoMro_degree.. "Degrees")
+    wait(5)
+    
+    MarstoOdyssey = mars_pos:vectorto(odyssey_spacecraft_pos)
+    MarstoOdyssey_length = MarstoOdyssey:length() * uly_to_km
+    ISStoOdyssey_magnitude = math.atan(MarstoOdyssey_length / MarstoISS_length) 
+    ISStoOdyssey_degree = math.deg(ISStoOdyssey_magnitude)
+    celestia:print("ISS to Odyssey:" ..ISStoOdyssey_degree.. "Degrees")
+    wait(5)
+
+    ExpresstoMro_magnitude = math.acos(MarstoMro_length/MarstoExpress_length)
+    ExpresstoMro_degree = math.deg(ExpresstoMro_magnitude)
+    celestia:print("Express to Mro: " ..ExpresstoMro_degree.. "Degree")
+    wait(5)
+
+    ExpresstoOdyssey_magnitude = math.acos(MarstoOdyssey_length / MarstoExpress_length)
+    ExpresstoOdyssey_degree = math.deg(ExpresstoOdyssey_magnitude)
+    celestia:print("Express to Odyssey: " ..ExpresstoOdyssey_degree.. "Degree")
+    wait(5)
+
+    MrotoOdyssey_magnitude = math.acos(MarstoMro_length/ MarstoOdyssey_length)
+    MrotoOdyssey_degree = math.deg(MrotoOdyssey_magnitude)
+    celestia:print("Odyssey to Mro: " ..MrotoOdyssey_degree.. "Degree")
+    wait(5)
+end 
+
+initialize ()
+positions()
+LineOfSight()
+

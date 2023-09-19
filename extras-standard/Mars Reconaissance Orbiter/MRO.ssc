@@ -1,0 +1,36 @@
+"MRO" "Sol/Mars"
+
+#  Orbital Parameters drawn from:
+#
+# PRIMARY SCIENCE ORBIT DESIGN FOR THE 
+# MARS RECONNAISSANCE ORBITER MISSION 
+#  Angela L. Bowes, C. Allen Halsell, M. Daniel Johnston, 
+#  Robert E. Lock, Daniel T. Lyons, Peter Xaypraseuth, 
+#  Shyam Bhaskaran, Dolan E. Highsmith, Moriba K. Jah 
+#
+#  Jet Propulsion Laboratory
+#
+#  Paper AAS 03-212 
+#
+#  13th AAS/AIAA Space Flight 
+#  Mechanics Meeting 
+#  Ponce, Puerto RCO 9-13 February 2003 
+
+
+{
+	Class			"spacecraft"
+	Mesh			"MRO.cmod"
+	Radius			0.01
+
+	EllipticalOrbit
+	{
+	Epoch			2451973.25864
+	Period			0.08127579
+	SemiMajorAxis		3648.5995
+	Eccentricity		0.01218
+	Inclination		92.6426
+	AscendingNode		-10.7004
+	ArgOfPericenter		-90
+	MeanAnomaly		180.0
+	}
+}

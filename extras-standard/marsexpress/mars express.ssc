@@ -1,0 +1,65 @@
+#"The orbit was adjusted by main engine firings to the desired 259 km × 11,560 km near polar (86 degree inclination) 
+#orbit with a period of 7.5 hours. 
+#Near periapsis the top deck is pointed down towards the martian surface and near apoapsis the high gain antenna 
+#will be pointed towards Earth for uplink and downlink. 
+#After 440 days the apoapsis will be lowered to 10,107 km and periapsis will be raised to 298 km to give an orbital 
+#period of 6.7 hours. " 
+
+"Mars Express flight" "Sol" 
+{ 
+Class "spacecraft" 
+Mesh "marsexpress.3ds" 
+Radius 0.006 
+Beginning 2452800.366666667 
+Ending 2452998.446301042 # 2003/12/25 
+Albedo 0.7 
+SampledOrbit "marsexpress.xyz" 
+} 
+
+"Mars Express orb1" "Sol/Mars" 
+{ 
+Class "spacecraft" 
+Mesh "marsexpress.3ds" 
+Radius 0.006 
+Beginning 2452998.446301042 
+Ending 2453438.446301042 
+Albedo 0.7 
+# Orbital elements are only very approximately correct 
+# These were taken from the ESA web site 
+EllipticalOrbit 
+{ 
+Epoch 2452998.446301042 
+Period 0.3125 # 7h30min 
+SemiMajorAxis 9305.5 # 11560.0 + 259 + 6792 / 2 
+Eccentricity 0.6072 
+Inclination 86.3 
+AscendingNode 62 
+ArgOfPericenter 180.0 
+MeanAnomaly 200.0 
+} 
+} 
+
+"Mars Express orb2" "Sol/Mars" 
+{ 
+Class "spacecraft" 
+Mesh "marsexpress.3ds" 
+Radius 0.006 
+Beginning 2453438.446301042 
+Ending 2553438.446301042 # who knows ? 
+InfoURL "http://sci.esa.int/science-e/www/area/index.cfm?fareaid=9"
+Albedo 0.7 
+# Orbital elements are only very approximately correct 
+# These were taken from the ESA web site 
+EllipticalOrbit 
+{ 
+Epoch 2453438.446301042 
+Period 0.2791 # 6h40min 
+SemiMajorAxis 8598.5 # 10107.0 + 298 + 6792 / 2 
+Eccentricity 0.5703 
+Inclination 86.3 
+AscendingNode 62 
+ArgOfPericenter 0.0 
+MeanAnomaly 0.0 
+} 
+} 
+

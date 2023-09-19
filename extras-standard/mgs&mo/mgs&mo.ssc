@@ -1,0 +1,41 @@
+"Mars Odyssey" "Sol/Mars"
+{
+	Class "spacecraft"
+	Mesh "marsodyssey.3ds"
+	Radius 0.01
+	Beginning		"2001 10 24 02:30:00"
+	Ending		"2200 01 01 01:00:00"  # will fall out of orbit by then
+
+	EllipticalOrbit
+	{
+	Epoch             2452251.70833
+	Period            0.0822
+	SemiMajorAxis     3797.2
+	Eccentricity      0.0
+	Inclination       93.1
+	AscendingNode     35
+	ArgOfPericenter   0.0
+	MeanAnomaly       0.0
+	}
+}
+
+"MGS" "Sol/Mars"
+{
+	Class "spacecraft"
+	Mesh "marsglobalsurvr.3ds"
+	Radius 0.01
+	Beginning		"1997 09 11 01:00:00"
+	Ending		"2200 01 01 01:00:00"  # will fall out of orbit by then
+
+	EllipticalOrbit
+	{
+	Epoch             2451973.25864
+	Period            0.08127579
+	SemiMajorAxis     3767.968213
+	Eccentricity      0.005809
+	Inclination      93.0092
+	AscendingNode    28.452982
+	ArgOfPericenter 267.202961
+	MeanAnomaly       0.0
+	}
+}
