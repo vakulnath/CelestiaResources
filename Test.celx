@@ -1,5 +1,6 @@
 now = celestia:gettime()
-uly_to_km = 9460730.4725808                     -- Light years to Km
+uly_to_km = 9460730.4725808                                     -- Light years to Km
+Mars_Radius = 3396                                              -- in km
 
 sol = celestia:find("Sol")
 earth = celestia:find("Earth")
@@ -8,85 +9,141 @@ mars = celestia:find("Mars")
 iss_spacecraft = celestia:find("Earth/ISS")                     -- International Space Stattion 
 express_spacecraft = celestia:find("Sol/Mars Express flight")   -- Mars express 
 mro_spacecraft = celestia:find("Mars/MRO")                      -- Mars reconaissance Orbiter 
-odyssey_spacecraft = celestia:find("Mars/Mars Odyssey")     -- Mars odyssey 
-mgs_spacecraft = celestia:find("Mars/MGS")                      -- Mars Global Surveyor
+odyssey_spacecraft = celestia:find("Mars/Mars Odyssey")         -- Mars odyssey 
+maven_spacecraft = celestia:find("Sol/Mars/Maven")              -- MAVEN
 
+-- Load all required positioins 
 mars_pos = mars:getposition(now) 
 earth_pos = earth:getposition(now)
-
+EarthtoMars = earth_pos:distanceto(mars_pos)
 iss_spacecraft_pos = iss_spacecraft:getposition(now)
 express_spacecraft_pos = express_spacecraft:getposition(now)
 mro_spacecraft_pos = mro_spacecraft:getposition(now)
 odyssey_spacecraft_pos = odyssey_spacecraft:getposition(now)
-mgs_spacecraft_pos = mgs_spacecraft:getposition(now)
+maven_spacecraft_pos = maven_spacecraft:getposition(now)
 
--- Initialize function selects Earth as the observer and sets the pov to top view of our solar system. 
+-- Calculate distances
+ISStoMro = iss_spacecraft_pos:distanceto(mro_spacecraft_pos)
+ISStoMaven = iss_spacecraft_pos:distanceto(maven_spacecraft_pos)
+ISStoOdyssey = iss_spacecraft_pos:distanceto(odyssey_spacecraft_pos)
+ISStoExpress = iss_spacecraft_pos:distanceto(express_spacecraft_pos)
+ExpresstoMro = express_spacecraft_pos:distanceto(mro_spacecraft_pos)
+ExpresstoMaven = express_spacecraft_pos:distanceto(maven_spacecraft_pos)
+ExpresstoOdyssey = express_spacecraft_pos:distanceto(odyssey_spacecraft_pos)
+MrotoMaven = mro_spacecraft_pos:distanceto(maven_spacecraft_pos)
+MrotoOdyssey = mro_spacecraft_pos:distanceto(odyssey_spacecraft_pos)
+MaventoOdyssey = maven_spacecraft_pos:distanceto(odyssey_spacecraft_pos)
+
 function initialize ()
     obs = celestia:getobserver()
     obs:splitview("V", 0.5)
     observers = celestia:getobservers()
     observers[1]:gotolonglat(sol, 0, 70, 2000000000, 5)
-    wait(5)
     observers[2]:goto(earth)
     observers[2]:gotodistance(mars, 90000+earth:radius(), 3.0)
 end
 
--- Calculates distance between Earth and Mars at the current time in AU 
-function positions () 
-    distance = earth_pos:distanceto(mars_pos) / 149597870.7
-    celestia:print("Mars is " .. distance .. " AU away", 10.0, -1, -1, 2, 4)
-    wait(1.0)
-end
-
 function LineOfSight()
-    Mars_Radius = 3396                                -- in km
-
-    MarstoISS = mars_pos:vectorto(iss_spacecraft_pos)   
-    MarstoISS_length = MarstoISS:length() * uly_to_km   -- get the magnitude from Mars center to ISS
-    ISStoMars_tangent = (math.sqrt((MarstoISS_length ^ 2) + (Mars_Radius ^ 2))) -- formula to find the tangent from ISS to Mars
-    ISS_Magnitude = math.atan(Mars_Radius / MarstoISS_length)     -- finding the magnitude of ISS to Mars (*2 to fine the total magnitude)
-    ISStoMars_degree = math.deg(ISS_Magnitude)                           -- converting radians to Degrees
-    celestia:print("ISS to Mars: " ..ISStoMars_degree.. "Degree")
-    wait(5)
+    MarstoISS = iss_spacecraft_pos:vectorto(mars_pos)   
+    MarstoISS_length = MarstoISS:length() * uly_to_km                                 -- get the magnitude from Mars center to ISS
+    ISStoMars_tangent = (math.sqrt((MarstoISS_length ^ 2) + (Mars_Radius ^ 2)))       -- formula to find the tangent from ISS to Mars
+    ISStoMars_Magnitude = math.deg(math.atan(ISStoMars_tangent,MarstoISS_length))     -- finding the magnitude of ISS to Mars (*2 to fine the total magnitude)
 
     MarstoExpress = mars_pos:vectorto(express_spacecraft_pos)
     MarstoExpress_length = MarstoExpress:length() * uly_to_km
-    ISStoExpress_magnitude = math.atan(MarstoExpress_length / MarstoISS_length) * 2
-    ISStoExpress_degree = math.deg(ISStoExpress_magnitude)
-    celestia:print("ISS to Express:" ..ISStoExpress_degree.. "Degrees")
-    wait(5)
+    ISStoExpress_magnitude = math.deg(math.atan(MarstoExpress_length,MarstoISS_length))
+
+    MarstoMaven = mars_pos:vectorto(maven_spacecraft_pos)
+    MarstoMaven_length = MarstoMaven:length() * uly_to_km
+    ISStoMaven_magnitude = math.deg(math.atan(MarstoMaven_length,MarstoISS_length))
 
     MarstoMro = mars_pos:vectorto(mro_spacecraft_pos)
     MarstoMro_length = MarstoMro:length() * uly_to_km
-    ISStoMro_magnitude = math.atan(MarstoMro_length / MarstoISS_length) 
-    ISStoMro_degree = math.deg(ISStoMro_magnitude)
-    celestia:print("ISS to Mro:" ..ISStoMro_degree.. "Degrees")
-    wait(5)
-    
+    ISStoMro_magnitude = math.deg(math.atan(MarstoMro_length,MarstoISS_length))
+
     MarstoOdyssey = mars_pos:vectorto(odyssey_spacecraft_pos)
     MarstoOdyssey_length = MarstoOdyssey:length() * uly_to_km
-    ISStoOdyssey_magnitude = math.atan(MarstoOdyssey_length / MarstoISS_length) 
-    ISStoOdyssey_degree = math.deg(ISStoOdyssey_magnitude)
-    celestia:print("ISS to Odyssey:" ..ISStoOdyssey_degree.. "Degrees")
-    wait(5)
+    ISStoOdyssey_magnitude = math.deg(math.atan(MarstoOdyssey_length,MarstoISS_length))
 
-    ExpresstoMro_magnitude = math.acos(MarstoMro_length/MarstoExpress_length)
-    ExpresstoMro_degree = math.deg(ExpresstoMro_magnitude)
-    celestia:print("Express to Mro: " ..ExpresstoMro_degree.. "Degree")
-    wait(5)
+    ExpresstoMro_magnitude = math.deg(math.atan(MarstoMro_length,MarstoExpress_length))
+    ExpresstoOdyssey_magnitude = math.deg(math.atan(MarstoOdyssey_length,MarstoExpress_length))
+    MrotoOdyssey_magnitude = math.deg(math.atan(MarstoMro_length,MarstoOdyssey_length))   
+    MaventoOdyssey_magnitude = math.deg(math.atan(MarstoMaven_length,MarstoOdyssey_length))
+    MaventoMro_magnitude = math.deg(math.atan(MarstoMaven_length,MarstoMro_length))
+    MaventoExpress_magnitude = math.deg(math.atan(MarstoMaven_length,MarstoExpress_length))
 
-    ExpresstoOdyssey_magnitude = math.acos(MarstoOdyssey_length / MarstoExpress_length)
-    ExpresstoOdyssey_degree = math.deg(ExpresstoOdyssey_magnitude)
-    celestia:print("Express to Odyssey: " ..ExpresstoOdyssey_degree.. "Degree")
-    wait(5)
+    Express_tangent = math.deg((math.sqrt((MarstoExpress_length^2)+ (Mars_Radius^2))))
+    Mro_tangent = math.deg((math.sqrt((MarstoMro_length^2) + (Mars_Radius^2))))
+    Maven_tangent = math.deg((math.sqrt((MarstoMaven_length ^ 2) + (Mars_Radius ^ 2))))
+    Odyssey_tangent = math.deg((math.sqrt((MarstoOdyssey_length ^ 2) + (Mars_Radius ^ 2))))
 
-    MrotoOdyssey_magnitude = math.acos(MarstoMro_length/ MarstoOdyssey_length)
-    MrotoOdyssey_degree = math.deg(MrotoOdyssey_magnitude)
-    celestia:print("Odyssey to Mro: " ..MrotoOdyssey_degree.. "Degree")
-    wait(5)
+    ExpresstoMars_magnitude = math.deg(math.atan(Express_tangent, MarstoExpress_length))
+    MrotoMars_magnitude = math.deg(math.atan(Mro_tangent, MarstoMro_length))
+    OdysseytoMars_magnitude = math.deg(math.atan(Odyssey_tangent, MarstoOdyssey_length))
+    MaventoMars_magnitude = math.deg(math.atan(Maven_tangent, MarstoMaven_length))
+
+    local message = ""
+    local message2 = ""
+
+    -- Define the links with imaginary distances and degrees
+    links = {
+    {from = "ISS", to = "Mro", mag = ISStoMro_magnitude, dis = ISStoMro},
+    {from = "ISS", to = "Express", mag = ISStoExpress_magnitude, dis = ISStoExpress},
+    {from = "ISS", to = "Maven", mag = ISStoMaven_magnitude, dis = ISStoMaven},
+    {from = "ISS", to = "Odyssey", mag = ISStoOdyssey_magnitude, dis = ISStoOdyssey}
+    }
+
+    mars_links = {
+    {from = "Express", to = "Mro", mag = ExpresstoMro_magnitude, dis = ExpresstoMro, tomars_mag = ExpresstoMars_magnitude, tomars_dis = MarstoExpress_length},
+    {from = "Express", to = "Maven", mag = MaventoExpress_magnitude, dis = ExpresstoMaven, tomars_mag = ExpresstoMars_magnitude, tomars_dis = MarstoExpress_length},
+    {from = "Express", to = "Odyssey", mag = ExpresstoOdyssey_magnitude, dis = ExpresstoOdyssey, tomars_mag = ExpresstoMars_magnitude, tomars_dis = MarstoExpress_length},
+    {from = "Mro", to = "Odyssey", mag = MrotoOdyssey_magnitude, dis = MrotoOdyssey, tomars_mag = MrotoMars_magnitude, tomars_dis = MarstoMro_length},
+    {from = "Mro", to = "Maven", mag = MaventoMro_magnitude, dis = MrotoMaven, tomars_mag = MrotoMars_magnitude, tomars_dis = MarstoMaven_length},
+    {from = "Maven", to = "Odyssey", mag = MaventoOdyssey_magnitude, dis = MaventoOdyssey, tomars_mag = MaventoMars_magnitude, tomars_dis = MarstoMaven_length}
+    }
+
+    for _, link in pairs(links) do
+        message = message .. isVisible(link.from, link.to, link.mag, link.dis, MarstoISS_length, ISStoMars_Magnitude) .. "\n"
+    end
+    celestia:print(message, 10)
+    wait(10)  
+
+    for _, connection in pairs (mars_links) do
+        message2 = message2 .. isVisible2(connection.from, connection.to, connection.mag, connection.dis, connection.tomars_mag, connection.tomars_dis) .. "\n"
+    end
+    celestia:print(message2, 10)
+    wait(10)
 end 
 
-initialize ()
-positions()
-LineOfSight()
+function isVisible(from, to, isstosat_mag, isstosat_dis, isstomars_dis, isstomars_mag)
+        if isstosat_mag >= isstomars_mag then
+            if isstosat_dis <= isstomars_dis then
+                return "Satellite " .. from .. " and " .. to .. " are in contact."
+            else
+                return "Satellite " .. from .. " and " .. to .. " are in contact."
+            end
+        else
+            if isstosat_dis <= isstomars_dis then
+                return "Satellite " .. from .. " and " .. to .. " are in contact."
+            elseif isstomars_dis >= EarthtoMars then
+                return "Satellite " .. from .. " and " .. to .. " are not in contact."
+            else
+                return "Satellite " .. from .. " and " .. to .. " are not in contact."
+            end
+        end
+end
 
+function isVisible2(from, to, mag, dis, sattomars_mag, sattomars_dis)
+        if mag >= sattomars_mag then 
+            return "Satellite " .. from .. " and " .. to .. " are in contact."
+        else
+            if dis < sattomars_dis then 
+                return "Satellite " .. from .. " and " .. to .. " are in contact."
+            else
+                return "Satellite " .. from .. " and " .. to .. " are not in contact."
+            end
+        end
+end
+
+initialize ()
+LineOfSight()
