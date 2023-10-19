@@ -1,0 +1,191 @@
+"MAVEN:Mars Atmosphere and Volatile Evolution:2013-063A" "Sol/Mars"
+{
+	Class "spacecraft"
+	Mesh "maven.cmod"
+	Radius	0.0057
+
+Timeline
+[
+	# Phase 1: Cruise to Mars, 2013-2014
+	{
+		Beginning	2456615.309027778  
+		Ending	2456922.375
+
+		OrbitFrame
+		{
+			EclipticJ2000	{ Center "Sol" }
+		}	
+
+		SampledTrajectory
+		{
+			Source	"MAVEN-Sun.xyzv"
+			DoublePrecision	true
+			Interpolation	"cubic"
+		}
+	
+		FixedRotation	{}		
+		BodyFrame
+		{
+			TwoVector
+			{
+				Center	"Sol/Mars/MAVEN"
+				Primary
+				{
+					Axis	"z"
+					RelativePosition
+					{
+						Observer	"Sol/Mars/MAVEN"
+						Target	"Sol"
+					}
+				}
+				Secondary
+				{
+					Axis	"x"
+					RelativeVelocity
+					{
+						Observer	"Sol/Mars/MAVEN"
+						Target	"Sol"
+					}
+				}
+			}
+		}
+	}
+
+	# Phase 2: Mars Orbit Insertion, 2014-2015
+	{
+		Ending	2457188.5
+
+		OrbitFrame
+		{
+			EclipticJ2000	{Center "Sol/Mars"}
+		}
+
+		SampledTrajectory
+		{
+			Source	"MAVEN-Mars1.xyzv"
+			DoublePrecision	true
+			Interpolation	"cubic"
+		}
+	
+		FixedRotation	{}		
+		BodyFrame
+		{
+			TwoVector
+			{
+				Center	"Sol/Mars/MAVEN"
+				Primary
+				{
+					Axis	"z"
+					RelativePosition
+					{
+						Observer	"Sol/Mars/MAVEN"
+						Target	"Sol"
+					}
+				}
+				Secondary
+				{
+					Axis	"-x"
+					RelativeVelocity
+					{
+						Observer	"Sol/Mars/MAVEN"
+						Target	"Sol"
+					}
+				}
+			}
+		}
+	}
+
+	# Phase 3: Continuing the Aerobrakes, 2015-2016
+	{
+		Ending   2457402.5  #  2016-Jan-15 00:00:00
+
+		OrbitFrame
+		{
+			EclipticJ2000	{Center "Sol/Mars"}
+		}
+
+		SampledTrajectory
+		{
+			Source	"MAVEN-Mars2.xyzv"
+			DoublePrecision	true
+			Interpolation	"cubic"
+		}
+	
+		FixedRotation	{}		
+		BodyFrame
+		{
+			TwoVector
+			{
+				Center	"Sol/Mars/MAVEN"
+				Primary
+				{
+					Axis	"z"
+					RelativePosition
+					{
+						Observer	"Sol/Mars/MAVEN"
+						Target	"Sol"
+					}
+				}
+				Secondary
+				{
+					Axis	"-x"
+					RelativeVelocity
+					{
+						Observer	"Sol/Mars/MAVEN"
+						Target	"Sol"
+					}
+				}
+			}
+		}
+	}
+
+	# Phase 4: Final Science Orbit
+	{
+		OrbitFrame
+		{
+			EclipticJ2000	{Center "Sol/Mars"}
+		}
+
+		EllipticalOrbit
+		{
+			Epoch			2457402.500000000
+			Period		      0.18779069458261094
+			SemiMajorAxis	   6591.530030694513
+			Eccentricity	      0.4645157773538788
+			Inclination	     98.92758289846148
+			AscendingNode	     60.51607616818976
+			ArgOfPericenter	    140.55373255652418
+			MeanAnomaly	    296.3415773836923
+		}
+	
+		FixedRotation	{}		
+		BodyFrame
+		{
+			TwoVector
+			{
+				Center	"Sol/Mars/MAVEN"
+				Primary
+				{
+					Axis	"z"
+					RelativePosition
+					{
+						Observer	"Sol/Mars/MAVEN"
+						Target	"Sol"
+					}
+				}
+				Secondary
+				{
+					Axis	"-x"
+					RelativeVelocity
+					{
+						Observer	"Sol/Mars/MAVEN"
+						Target	"Sol"
+					}
+				}
+			}
+		}
+	}
+]
+	InfoURL	"https://en.wikipedia.org/wiki/MAVEN"
+}
+	
