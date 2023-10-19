@@ -1,0 +1,29 @@
+-- Request system access using Celestia's API
+celestia:requestsystemaccess()
+
+-- Wait for a short duration (assuming 'wait' is a valid function in your context)
+wait(0)
+
+-- Attempt to open the file in write mode
+local test_file, err = io.open("/tmp/data.txt", "a+")
+
+-- Check if the file was opened successfully
+if not test_file then
+    celestia:print("Error opening file: " .. err, 5)
+    return
+end
+
+-- Attempt to write to the file
+local success, write_err = pcall(function()
+    io.output(test_file):write("This is a test")
+end)
+
+-- Check if writing was successful
+if not success then
+    celestia:print("Error writing to file: " .. write_err)
+end
+
+-- Close the file
+io.close(test_file)
+
+
