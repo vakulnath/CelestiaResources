@@ -4,9 +4,7 @@ celestia:setrenderflags{orbits = true}
 obs = celestia:getobserver()                                    -- Left view is solar system from top and right view is mars and orbiters as seen from earth
 obs:splitview("V", 0.5)
 
-now = celestia:gettime()
 uly_to_km = 9460730.4725808                                     -- Light years to Km
-
 
 sol = celestia:find("Sol")
 earth = celestia:find("Earth")
@@ -17,6 +15,8 @@ express_spacecraft = celestia:find("Sol/Mars Express flight")   -- Mars express
 mro_spacecraft = celestia:find("Mars/MRO")                      -- Mars reconaissance Orbiter 
 odyssey_spacecraft = celestia:find("Mars/Mars Odyssey")         -- Mars odyssey 
 maven_spacecraft = celestia:find("Sol/Mars/Maven")              -- MAVEN
+
+now=celestia:gettime()
 
 function initialize ()
     observers = celestia:getobservers()
@@ -58,6 +58,9 @@ function updated_pos (time)
     EarthtoISS_length = EarthtoISS:length() * uly_to_km
     ISStoEarth_tangent = (math.sqrt((MarstoISS_length ^ 2) + (earth:radius() ^ 2)))
     ISStoEarth_magnitude = math.deg(math.atan(ISStoEarth_tangent, EarthtoISS_length))
+ 
+    EarthtoMars = earth_pos:vectorto(mars_pos)
+    MarsToISS = iss_spacecraft_pos:vectorto(mars_pos)
 
     MarstoExpress = mars_pos:vectorto(express_spacecraft_pos)
     MarstoExpress_length = MarstoExpress:length() * uly_to_km
@@ -92,12 +95,11 @@ function updated_pos (time)
     OdysseytoMars_magnitude = math.deg(math.atan(Odyssey_tangent, MarstoOdyssey_length))
     MaventoMars_magnitude = math.deg(math.atan(Maven_tangent, MarstoMaven_length))
 
-    -- Define the links with imaginary distances and degrees
     links = {
-    {from = "ISS", to = "Mro", mag = ISStoMro_magnitude, dis = ISStoMro, tomars_mag = ISStoMars_Magnitude, tomars_dis = MarstoISS_length},
-    {from = "ISS", to = "Express", mag = ISStoExpress_magnitude, dis = ISStoExpress, tomars_mag = ISStoMars_Magnitude, tomars_dis = MarstoISS_length},
-    {from = "ISS", to = "Maven", mag = ISStoMaven_magnitude, dis = ISStoMaven, tomars_mag = ISStoMars_Magnitude, tomars_dis = MarstoISS_length},
-    {from = "ISS", to = "Odyssey", mag = ISStoOdyssey_magnitude, dis = ISStoOdyssey, tomars_mag = ISStoMars_Magnitude, tomars_dis = MarstoISS_length}
+    {from = "ISS", to = "Mro", mag = ISStoMro_magnitude, dis = ISStoMro, tomars_mag = ISStoMars_Magnitude, tomars_dis = MarstoISS_length, sattoearth = ISStoEarth_magnitude},
+    {from = "ISS", to = "Express", mag = ISStoExpress_magnitude, dis = ISStoExpress, tomars_mag = ISStoMars_Magnitude, tomars_dis = MarstoISS_length, sattoearth = ISStoEarth_magnitude},
+    {from = "ISS", to = "Maven", mag = ISStoMaven_magnitude, dis = ISStoMaven, tomars_mag = ISStoMars_Magnitude, tomars_dis = MarstoISS_length, sattoearth = ISStoEarth_magnitude},
+    {from = "ISS", to = "Odyssey", mag = ISStoOdyssey_magnitude, dis = ISStoOdyssey, tomars_mag = ISStoMars_Magnitude, tomars_dis = MarstoISS_length, sattoearth = ISStoEarth_magnitude}
     }
 
     mars_links = {
@@ -112,48 +114,124 @@ function updated_pos (time)
 end
 
 function stats ()
-    local message = now
-    local message2 = now
+    while true do
+    now = celestia:gettime()
+        message = now
 
-    links, mars_links = updated_pos (now)
+        links, mars_links = updated_pos (now)
 
-    for _, link in pairs(links) do
-        message = message .. isVisible(link.from, link.to, link.mag, link.dis, MarstoISS_length, ISStoMars_Magnitude) .. ", "
+        for _, link in pairs(links) do
+            message = message .. ", " .. isVisible("ISS",link.from, link.to, link.mag, link.dis, link.tomars_mag, link.tomars_dis, link.sattoearth_mag) .. link.dis
+        end
+        --celestia:log(message)
+        --io.output(test_file):write(message)
+        
+        for _, connection in pairs (mars_links) do
+            message = message .. ", " .. isVisible("Mars",connection.from, connection.to, connection.mag, connection.dis, connection.tomars_mag, connection.tomars_dis, nil) .. connection.dis
+        end
+        celestia:log(message)
+        --io.output(test_file):write(message .. "\n")
+        --io.flush()
+    wait(60)
     end
-    celestia:log(message)
-    
-    for _, connection in pairs (mars_links) do
-        message2 = message2 .. isVisible2(connection.from, connection.to, connection.mag, connection.dis, connection.tomars_mag, connection.tomars_dis) .. ","
-    end
-    celestia:log(message2)
 end 
 
-function isVisible(from, to, isstosat_mag, isstosat_dis, isstomars_dis, isstomars_mag)
+function isVisible(mode, from, to, mag, dis, sattomars_mag, sattomars_dis, sattoearth_mag)
+    if mode == "ISS" then
         EarthtoMars = earth_pos:distanceto(mars_pos)
-        if isstosat_mag >= isstomars_mag then
-            return "are in contact."    
-        else
-            if isstosat_dis <= isstomars_dis then
-                return "are in contact."
-            elseif isstomars_dis >= EarthtoMars then
-                return "are not in contact."
+        if sattomars_mag >= sattoearth_mag and sattomars_dis <= EarthtoMars then
+            if mag >= sattomars_mag then
+                return "in contact" 
             else
-                return "are not in contact."
+                if dis <= sattomars_dis then
+                    return "in contact"
+                else
+                    return "not in contact"
+                end
             end
-        end
-end
-
-function isVisible2(from, to, mag, dis, sattomars_mag, sattomars_dis)
-    if mag >= sattomars_mag then 
-        return "in contact"
-    else
-        if dis <= sattomars_dis then 
-            return "in contact"
         else
             return "not in contact"
+        end
+    elseif mode == "Mars" then
+        if mag >= sattomars_mag then 
+            return "in contact"
+        else
+            if dis <= sattomars_dis then 
+                return "in contact" 
+            else
+                return "not in contact"
+            end
+        end
+    end
+end
+
+function window()
+    now = celestia:gettime()
+    links, mars_links = updated_pos(now)
+    
+    for _, link in ipairs(links) do
+        link_time = now
+        celestia:log(link_time)
+        status = isVisible("ISS", link.from, link.to, link.mag, link.dis, link.tomars_mag, link.tomars_dis, link.sattoearth)
+
+        if status == "not in contact" then
+            celestia:log("Initial status between " .. link.from .. " and " .. link.to .. ": Not in contact at time: " .. link_time)
+        else
+            while status == "in contact" do
+                link_time = link_time + 0.000694444 -- Increment time
+                updated_links = updated_pos(link_time) -- Get updated positions
+
+                -- Find and update the current link's data from updated_links
+                for _, updated_link in ipairs(updated_links) do
+                    if updated_link.from == link.from and updated_link.to == link.to then
+                        link.mag = updated_link.mag
+                        link.dis = updated_link.dis
+                        link.tomars_mag = updated_link.tomars_mag
+                        link.tomars_dis = updated_link.tomars_dis
+                        link.sattoearth_mag = updated_link.sattoearth
+                    end
+                end
+                status = isVisible("ISS", link.from, link.to, link.mag, link.dis, link.tomars_mag, link.tomars_dis, link.sattoearth)
+
+                if status == "not in contact" then
+                    celestia:log("Contact lost between " .. link.from .. " and " .. link.to .. " at time: " .. link_time)
+                    break -- Exit the loop when contact is lost
+                end
+            end
+        end
+    end
+
+    for _, connection in ipairs(mars_links) do
+        connection_time = now
+        celestia:log(connection_time)
+        status = isVisible("Mars",connection.from, connection.to, connection.mag, connection.dis, connection.tomars_mag, connection.tomars_dis, nil)
+
+        if status == "not in contact" then
+            celestia:log("Initial status between " .. connection.from .. " and " .. connection.to .. ": Not in contact at time: " .. connection_time)
+        else
+            while status == "in contact" do
+                connection_time = connection_time + 0.000694444 -- Increment time
+                _, new_links = updated_pos(connection_time) -- Get updated positions
+
+                -- Find and update the current link's data from updated_links
+                for _, new_link in ipairs(new_links) do
+                    if new_link.from == connection.from and new_link.to == connection.to then
+                        connection.mag = new_link.mag
+                        connection.dis = new_link.dis
+                        connection.tomars_mag = new_link.tomars_mag
+                        connection.tomars_dis = new_link.tomars_dis
+                    end
+                end
+                status = isVisible("Mars",connection.from, connection.to, connection.mag, connection.dis, connection.tomars_mag, connection.tomars_dis, nil)
+
+                if status == "not in contact" then
+                    celestia:log("Contact lost between " .. connection.from .. " and " .. connection.to .. " at time: " .. connection_time)
+                    break -- Exit the loop when contact is lost
+                end
+            end
         end
     end
 end
 
 initialize()
-stats()
+window()
